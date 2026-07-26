@@ -1,0 +1,19 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  docs:
+    name: docs (link check)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: check links (offline)
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --offline --no-progress .
+          fail: true

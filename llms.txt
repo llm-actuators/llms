@@ -1,0 +1,60 @@
+# llm-actuators
+
+> LLM-first toolchain — hands, eyes, legs, and fingers for an LLM session. 18 single-purpose binaries that let an LLM act on real systems (devices, processes, files, other agents). This file is the canonical entrypoint to the org.
+
+## What this is
+
+Every repo in this org is a tool an LLM uses to do work in the world. Each binary is sterile — primitives only, no domain verbs. Domain knowledge lives in the LLM, not the tool.
+
+If you are an LLM session opening this org for the first time, read this file end-to-end. It is short on purpose.
+
+## The fleet
+
+| Binary | Role | Repo |
+|---|---|---|
+| `ddb` | Android device control (tap/swipe/type/screenshot/install/logcat) | [ddb](https://github.com/llm-actuators/ddb) |
+| `idb` | iOS device control (same surface, physical devices via WDA) | [idb](https://github.com/llm-actuators/idb) |
+| `wdb` | Browser control via Chrome DevTools Protocol | [wdb](https://github.com/llm-actuators/wdb) |
+| `vdb` | Visual debug bridge — cross-platform drift + region matrix | [vdb](https://github.com/llm-actuators/vdb) |
+| `fdb` | Figma frame extraction | [fdb](https://github.com/llm-actuators/fdb) |
+| `switchboard` | File-based pub/sub for multi-LLM coordination | [switchboard](https://github.com/llm-actuators/switchboard) |
+| `recruit` | Mid-session teammate spawner — splits tmux, joins same wire | [recruit](https://github.com/llm-actuators/recruit) |
+| `dismiss` | Terminate a recruited seat — finds the tmux pane, kills it, emits kind:leave | [recruit](https://github.com/llm-actuators/recruit) |
+| `tctl` | Toolchain control — preflight, suite, doc authority | [tctl](https://github.com/llm-actuators/tctl) |
+| `token-monitor` | Session token usage alarm before context wipes | [token-monitor](https://github.com/llm-actuators/token-monitor) |
+| `compact-self` | TUI compactor — agent triggers its own `/compact` | [compact-self](https://github.com/llm-actuators/compact-self) |
+| `claude-sandbox` | macOS Seatbelt profile + escape hatch (`nosandbox`) | [claude-sandbox](https://github.com/llm-actuators/claude-sandbox) |
+| `skill-router` | PreToolUse-hook rules engine for skill enforcement | [skill-router](https://github.com/llm-actuators/skill-router) |
+| `substrate` | Skill ecosystem CLI — enroll repos, deploy hooks, validate | [substrate](https://github.com/llm-actuators/substrate) |
+
+## Libraries and supporting repos
+
+| Repo | Role |
+|---|---|
+| [semantic-schema](https://github.com/llm-actuators/semantic-schema) | Shared Rust crate — data types for the on-device agent payload (consumed by ddb + vdb) |
+| [semantic-agent-flutter](https://github.com/llm-actuators/semantic-agent-flutter) | In-app debug HTTP agent for Flutter apps (sibling implementations live inside `idb/agent/` and `ddb/agent/`) |
+| [WebDriverAgent](https://github.com/llm-actuators/WebDriverAgent) | Fork of the Facebook WDA, pinned by `idb` as a submodule |
+
+## Where to go next
+
+- [repos.md](repos.md) — full map, what's a binary vs a library, language, status
+- [binaries.md](binaries.md) — one paragraph per binary: what it does, how to invoke, where the README lives
+- [device-control.md](device-control.md) — common surface across `ddb`/`idb`/`wdb` (shared verbs, flag style, exit codes, output format)
+- [agent-contract.md](agent-contract.md) — HTTP contract every in-app semantic-agent implements
+- [walker-accessibility.md](walker-accessibility.md) — app-side a11y obligations so the walker can find elements (SwiftUI gotchas, off-viewport carousels, app-side fix vs toolchain widening)
+- [mock-corpus.md](mock-corpus.md) — mock envelope shape, per-TC overlay variants, stateful mutation side-effects
+- [schema.md](schema.md) — semantic-schema overview (the agent payload)
+- [conventions.md](conventions.md) — release discipline (tags, CHANGELOGs, ADRs)
+
+## Canonical deep references (in source repos)
+
+- `tctl/docs/` — toolchain doc authority: ADRs, tech-debt ledger (180+ entries), epics, gaps, getting-started
+- `tctl/docs/llms.txt` — tctl-binary entry point (deeper than this file)
+- `tctl/docs/agent-porting-guide.md` — authoritative agent contract
+- `tctl/docs/tech-debt.md` — search before adding any new mechanism
+
+## What this org is NOT
+
+- Not a framework. Each tool is a single binary you call.
+- Not a runtime. The LLM is the runtime; tools are effectors.
+- Not human-first. Humans can use these, but every doc assumes the consumer is a model.
