@@ -6,6 +6,12 @@ The canonical entrypoint is [llms.txt](llms.txt). It is short and reads as well 
 
 This README exists so humans landing here have something to scan. Everything else in this repo is structured for model consumption.
 
+## Architecture
+
+![llm-actuators toolchain architecture](architecture.svg)
+
+The toolchain groups into layers. An **orchestrator** (`tctl`) turns a feature spec into test cases and drives the **device-control** bridges (`ddb` / `idb` / `wdb`) that share one verb set across Android, iOS, and web. On-device agents emit a **semantic-schema** payload that the **visual** tools (`vdb` / `fdb`) diff for design-vs-built drift. A **coordination** layer (`switchboard`, `recruit`) runs and supervises multi-agent sessions, while **session-management** (`token-monitor`, `compact-self`) and an **enforcement + harness** layer (`skill-router`, `workflows`, `substrate`, `claude-sandbox`) keep those sessions safe, governed, and reproducible.
+
 ## What lives here
 
 This repo is the **entrypoint** to the [llm-actuators](https://github.com/llm-actuators) org. It indexes 15 binaries and libraries and hosts cross-cutting docs that don't belong in any single tool repo:

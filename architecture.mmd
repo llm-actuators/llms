@@ -1,0 +1,72 @@
+%%{init: {"theme":"neutral","flowchart":{"curve":"basis"}}}%%
+graph TB
+  A(["LLM agent session"])
+
+  subgraph ORCH["Orchestration"]
+    tctl["<b>tctl</b><br/>preflight → spec → suite"]
+  end
+
+  subgraph DEV["Device control · one verb set, three targets"]
+    ddb["<b>ddb</b><br/>Android"]
+    idb["<b>idb</b><br/>iOS"]
+    wdb["<b>wdb</b><br/>Web / CDP"]
+  end
+
+  subgraph CAP["On-device capture"]
+    saf["<b>semantic-agent-flutter</b><br/>in-app agent"]
+    schema[["<b>semantic-schema</b><br/>UI payload"]]
+    dci["<b>device-control-ios</b><br/>WebDriverAgent pin"]
+  end
+
+  subgraph VIS["Visual + design"]
+    vdb["<b>vdb</b><br/>drift matrix"]
+    fdb["<b>fdb</b><br/>Figma → schema"]
+    fkp["<b>figma-kiwi-protocol</b><br/>Figma read/write"]
+  end
+
+  subgraph COORD["Coordination"]
+    sb["<b>switchboard</b> · <b>switchboard-ui</b><br/>multi-agent wire"]
+    rec["<b>recruit</b> · <b>dismiss</b> · <b>idle-scout</b><br/>seat lifecycle"]
+  end
+
+  subgraph SESS["Session management"]
+    tm["<b>token-monitor</b> → <b>compact-self</b><br/>context-loss alarm"]
+    rc["<b>remote-control</b><br/>drive from mobile"]
+    burn["<b>burn</b><br/>fleet token report"]
+  end
+
+  subgraph INFRA["Enforcement + harness"]
+    sr["<b>skill-router</b><br/>stateless PreToolUse gate"]
+    wf["<b>workflows</b><br/>stateful workflow gate"]
+    specs["<b>specs</b><br/>gate config schemas"]
+    sub["<b>substrate</b><br/>skill/hook deploy"]
+    sbx["<b>claude-sandbox</b><br/>Seatbelt sandbox"]
+  end
+
+  subgraph COORDDEV["Device coordination"]
+    dclaim["<b>device-claim</b><br/>per-device mutex"]
+    resrc["<b>resources</b><br/>device inventory"]
+    idle["<b>idle-work</b><br/>checkpoint / resume"]
+  end
+
+  A --> tctl
+  tctl --> ddb & idb & wdb
+  idb --> dci
+  ddb --> saf
+  idb --> saf
+  saf --> schema
+  schema --> vdb
+  fkp --> fdb
+  fdb --> vdb
+  ddb --> dclaim
+  idb --> dclaim
+  dclaim --> resrc
+  A -. wire .-> sb
+  A -. spawn .-> rec
+  A -. hooks .-> sr
+  A -. hooks .-> wf
+  wf --- specs
+  sub --> sr
+  sub --> wf
+  sbx -. sandboxes .-> A
+  tm -. protects .-> A
