@@ -1,14 +1,18 @@
 # llm-actuators
 
-> LLM-first toolchain — hands, eyes, legs, and fingers for an LLM session. 18 single-purpose binaries that let an LLM act on real systems (devices, processes, files, other agents). This file is the canonical entrypoint to the org.
+> LLM-first toolchain — hands, eyes, legs, and fingers for an LLM session. 34 public repos: single-purpose tools that let an LLM act on real systems (devices, processes, files, other agents), plus the libraries, iOS components, and specs that support them. This file is the canonical entrypoint to the org.
 
 ## What this is
 
-Every repo in this org is a tool an LLM uses to do work in the world. Each binary is sterile — primitives only, no domain verbs. Domain knowledge lives in the LLM, not the tool.
+Every tool in this org is something an LLM uses to do work in the world. Each binary is sterile — primitives only, no domain verbs. Domain knowledge lives in the LLM, not the tool.
+
+The org holds **34 public repos**: **32 toolchain/content repos** (the tools below, their libraries, iOS components, and specs) plus **2 org-infra repos** (`.github` — the org profile; `llm-actuators.github.io` — the Pages landing site).
 
 If you are an LLM session opening this org for the first time, read this file end-to-end. It is short on purpose.
 
 ## The fleet
+
+The tools an LLM session invokes directly.
 
 | Binary | Role | Repo |
 |---|---|---|
@@ -16,28 +20,44 @@ If you are an LLM session opening this org for the first time, read this file en
 | `idb` | iOS device control (same surface, physical devices via WDA) | [idb](https://github.com/llm-actuators/idb) |
 | `wdb` | Browser control via Chrome DevTools Protocol | [wdb](https://github.com/llm-actuators/wdb) |
 | `vdb` | Visual debug bridge — cross-platform drift + region matrix | [vdb](https://github.com/llm-actuators/vdb) |
-| `fdb` | Figma frame extraction | [fdb](https://github.com/llm-actuators/fdb) |
-| `switchboard` | File-based pub/sub for multi-LLM coordination | [switchboard](https://github.com/llm-actuators/switchboard) |
-| `recruit` | Mid-session teammate spawner — splits tmux, joins same wire | [recruit](https://github.com/llm-actuators/recruit) |
-| `dismiss` | Terminate a recruited seat — finds the tmux pane, kills it, emits kind:leave | [recruit](https://github.com/llm-actuators/recruit) |
-| `tctl` | Toolchain control — preflight, suite, doc authority | [tctl](https://github.com/llm-actuators/tctl) |
+| `fdb` | Figma frame extraction into the shared semantic schema | [fdb](https://github.com/llm-actuators/fdb) |
+| `switchboard` | File-based pub/sub for multi-LLM coordination (ships `switchboard-ui`) | [switchboard](https://github.com/llm-actuators/switchboard) |
+| `recruit` | Mid-session teammate spawner — splits tmux, joins same wire (ships `dismiss` + `idle-scout`) | [recruit](https://github.com/llm-actuators/recruit) |
 | `token-monitor` | Session token usage alarm before context wipes | [token-monitor](https://github.com/llm-actuators/token-monitor) |
 | `compact-self` | TUI compactor — agent triggers its own `/compact` | [compact-self](https://github.com/llm-actuators/compact-self) |
+| `remote-control` | Expose the session to the Claude iOS app over VPN | [remote-control](https://github.com/llm-actuators/remote-control) |
+| `burn` | Fleet-wide token-burn aggregator — GREEN/AMBER/RED across all seats | [burn](https://github.com/llm-actuators/burn) |
+| `todo` | Priority-aware Markdown task ledger for agent cohorts | [todo](https://github.com/llm-actuators/todo) |
+| `device-claim` | Atomic per-device mutex for concurrent agent sessions | [device-claim](https://github.com/llm-actuators/device-claim) |
+| `resources` | Device/sim/emulator inventory across the fleet | [resources](https://github.com/llm-actuators/resources) |
+| `actuators-doctor` | Fleet-wide health check for the org's binaries | [actuators-doctor](https://github.com/llm-actuators/actuators-doctor) |
+| `fleet-tui` | Read-only terminal dashboard for a multi-agent fleet | [fleet-tui](https://github.com/llm-actuators/fleet-tui) |
+| `gate` | Workflow state-machine enforcer wired into Claude Code hooks | [workflows](https://github.com/llm-actuators/workflows) |
+| `tctl` | Toolchain control — preflight, suite, doc authority | [tctl](https://github.com/llm-actuators/tctl) |
 | `claude-sandbox` | macOS Seatbelt profile + escape hatch (`nosandbox`) | [claude-sandbox](https://github.com/llm-actuators/claude-sandbox) |
 | `skill-router` | PreToolUse-hook rules engine for skill enforcement | [skill-router](https://github.com/llm-actuators/skill-router) |
 | `substrate` | Skill ecosystem CLI — enroll repos, deploy hooks, validate | [substrate](https://github.com/llm-actuators/substrate) |
+
+Some repos ship more than one binary. `switchboard` also ships `switchboard-ui` (the ratatui chat client). `recruit` also ships `dismiss` (kill a recruited seat) and `idle-scout` (cron-fired cull-candidate scanner). `workflows` ships the `gate` binary. `fleet-tooling` ships a set of read-only fleet observability helpers (`fleet-digest` + its renderer, `idle-worktree`, `review-gen`).
 
 ## Libraries and supporting repos
 
 | Repo | Role |
 |---|---|
-| [semantic-schema](https://github.com/llm-actuators/semantic-schema) | Shared Rust crate — data types for the on-device agent payload (consumed by ddb + vdb) |
-| [semantic-agent-flutter](https://github.com/llm-actuators/semantic-agent-flutter) | In-app debug HTTP agent for Flutter apps (sibling implementations live inside `idb/agent/` and `ddb/agent/`) |
-| [WebDriverAgent](https://github.com/llm-actuators/WebDriverAgent) | Fork of the Facebook WDA, pinned by `idb` as a submodule |
+| [semantic-schema](https://github.com/llm-actuators/semantic-schema) | Shared Rust crate — the canonical semantic-UI wire format that ties `ddb`, `idb`, `fdb`, and `vdb` together |
+| [semantic-agent-flutter](https://github.com/llm-actuators/semantic-agent-flutter) | Debug-only in-process HTTP agent for Flutter apps (sibling of the Android/iOS agents inside `ddb/agent/` and `idb/agent/`) |
+| [idle-work](https://github.com/llm-actuators/idle-work) | Rust library + `idle-checkpoint` CLI — checkpoint + interrupt-safety primitives for long background jobs |
+| [fleet-tooling](https://github.com/llm-actuators/fleet-tooling) | Read-only fleet observability & background-work helpers; reads its project topology from config |
+| [hooks](https://github.com/llm-actuators/hooks) | Lifecycle-hook templates (session-start, post-compact) + an ARCHITECTURE.md documenting the enforcement layer, abstracted |
+| [specs](https://github.com/llm-actuators/specs) | Example TOML config schemas for the toolchain's soft-gates |
+| [WebDriverAgent](https://github.com/llm-actuators/WebDriverAgent) | Fork of the Facebook WDA, driven by iOS device control |
+| [device-control-ios](https://github.com/llm-actuators/device-control-ios) | Support repo that pins/vendors the WDA revision `idb` builds against |
+| [switchboard-ios](https://github.com/llm-actuators/switchboard-ios) | Native SwiftUI iOS client for the switchboard wire |
+| [visual-qa](https://github.com/llm-actuators/visual-qa) | Cross-platform device-automation framework overview (properties, not screenshots, as source of truth) |
 
 ## Where to go next
 
-- [repos.md](repos.md) — full map, what's a binary vs a library, language, status
+- [repos.md](repos.md) — full map of all 34 repos: binary vs library vs iOS component vs docs, language, status
 - [binaries.md](binaries.md) — one paragraph per binary: what it does, how to invoke, where the README lives
 - [device-control.md](device-control.md) — common surface across `ddb`/`idb`/`wdb` (shared verbs, flag style, exit codes, output format)
 - [agent-contract.md](agent-contract.md) — HTTP contract every in-app semantic-agent implements
